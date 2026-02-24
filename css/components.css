@@ -1,0 +1,699 @@
+/* ============================================
+   QAARI — Component Styles
+   ============================================ */
+
+/* ── Surah Card ── */
+.surah-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    transition: all var(--transition-base);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.surah-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent-subtle), transparent);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.surah-card:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.surah-card:hover::before {
+    opacity: 1;
+}
+
+.surah-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+}
+
+.surah-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.surah-play-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all var(--transition-base);
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.surah-card:hover .surah-play-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.surah-play-btn:hover {
+    transform: scale(1.06) !important;
+    background: var(--accent-hover);
+}
+
+.surah-play-btn svg {
+    width: 18px;
+    height: 18px;
+    margin-left: 2px;
+}
+
+.surah-card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.surah-name-arabic {
+    font-family: var(--font-arabic);
+    font-size: var(--text-xl);
+    direction: rtl;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+    line-height: 1.6;
+}
+
+.surah-name-english {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+}
+
+.surah-translation {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-2);
+}
+
+.surah-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Badges ── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.badge-meccan {
+    background: var(--gold-muted);
+    color: var(--gold);
+}
+
+.badge-medinan {
+    background: var(--blue-muted);
+    color: var(--blue);
+}
+
+.badge-ayahs {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+}
+
+.badge-juz {
+    background: rgba(147, 51, 234, 0.15);
+    color: #a78bfa;
+}
+
+/* ── Reciter Card ── */
+.reciter-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-align: center;
+    position: relative;
+}
+
+.reciter-card:hover {
+    background: var(--glass-bg-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.reciter-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: white;
+    position: relative;
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-base);
+    overflow: hidden;
+}
+
+.reciter-card:hover .reciter-avatar {
+    box-shadow: var(--shadow-glow);
+}
+
+.reciter-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.reciter-play-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.reciter-card:hover .reciter-play-overlay {
+    opacity: 1;
+}
+
+.reciter-play-overlay svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+.reciter-name {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.reciter-name-arabic {
+    font-family: var(--font-arabic);
+    font-size: var(--text-md);
+    color: var(--text-secondary);
+    direction: rtl;
+}
+
+/* ── Ayah List Item ── */
+.ayah-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.ayah-item:hover {
+    background: var(--glass-bg-hover);
+}
+
+.ayah-item.playing {
+    background: var(--accent-subtle);
+}
+
+.ayah-item.playing .ayah-number {
+    color: var(--accent);
+}
+
+.ayah-number {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    background: var(--glass-bg);
+}
+
+.ayah-text {
+    flex: 1;
+    font-family: var(--font-arabic);
+    font-size: var(--text-xl);
+    direction: rtl;
+    line-height: 2.2;
+    color: var(--text-primary);
+}
+
+.ayah-play-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    transition: all var(--transition-fast);
+    opacity: 0;
+}
+
+.ayah-item:hover .ayah-play-btn {
+    opacity: 1;
+}
+
+.ayah-play-btn:hover {
+    color: var(--accent);
+    background: var(--accent-subtle);
+}
+
+/* ── Buttons ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-full);
+    font-size: var(--text-base);
+    font-weight: 600;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.btn-secondary {
+    background: var(--glass-bg);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--border-hover);
+}
+
+.btn-ghost {
+    color: var(--text-secondary);
+    padding: var(--space-2) var(--space-3);
+}
+
+.btn-ghost:hover {
+    color: var(--text-primary);
+    background: var(--glass-bg);
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: var(--radius-full);
+}
+
+/* ── Favorite Heart ── */
+.favorite-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    color: var(--text-tertiary);
+    transition: all var(--transition-fast);
+}
+
+.favorite-btn:hover {
+    color: #e74c6f;
+    background: rgba(231, 76, 111, 0.1);
+}
+
+.favorite-btn.active {
+    color: #e74c6f;
+}
+
+.favorite-btn.active svg {
+    fill: #e74c6f;
+}
+
+/* ── Hero Section ── */
+.hero {
+    position: relative;
+    padding: var(--space-16) var(--space-8);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--space-12);
+    background: linear-gradient(135deg,
+            rgba(29, 185, 84, 0.15),
+            rgba(13, 155, 106, 0.08),
+            var(--bg-tertiary));
+    border: 1px solid var(--glass-border);
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+}
+
+.hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    background: var(--accent-subtle);
+    border: 1px solid rgba(29, 185, 84, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: var(--space-4);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    font-size: var(--text-5xl);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: var(--space-4);
+    background: linear-gradient(135deg, var(--text-primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-8);
+}
+
+.hero-actions {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+}
+
+/* ── Detail Page Header ── */
+.detail-header {
+    display: flex;
+    gap: var(--space-8);
+    align-items: flex-end;
+    margin-bottom: var(--space-8);
+    padding: var(--space-8);
+    background: linear-gradient(180deg, var(--bg-tertiary), transparent);
+    border-radius: var(--radius-xl);
+}
+
+.detail-art {
+    width: 220px;
+    height: 220px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.detail-art-number {
+    font-size: 80px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.15);
+    position: absolute;
+}
+
+.detail-art-name {
+    font-family: var(--font-arabic);
+    font-size: var(--text-4xl);
+    color: white;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    direction: rtl;
+}
+
+.detail-info {
+    flex: 1;
+}
+
+.detail-type {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
+}
+
+.detail-title {
+    font-size: var(--text-4xl);
+    font-weight: 800;
+    margin-bottom: var(--space-2);
+}
+
+.detail-subtitle {
+    font-size: var(--text-xl);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+.detail-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-6);
+}
+
+.detail-stats .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+}
+
+.detail-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+/* ── Continue Listening Card ── */
+.continue-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.continue-card:hover {
+    background: var(--glass-bg-hover);
+    transform: translateY(-1px);
+}
+
+.continue-card-art {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-arabic);
+    font-size: var(--text-lg);
+    color: white;
+    flex-shrink: 0;
+}
+
+.continue-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.continue-card-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.continue-card-sub {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+/* ── Loading State ── */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-16);
+    gap: var(--space-4);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bg-hover);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+/* ── Empty State ── */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-16);
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+}
+
+.empty-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.empty-desc {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* ── Responsive Detail Header ── */
+@media (max-width: 768px) {
+    .hero {
+        padding: var(--space-8) var(--space-6);
+    }
+
+    .hero-title {
+        font-size: var(--text-3xl);
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .detail-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: var(--space-6);
+    }
+
+    .detail-art {
+        width: 180px;
+        height: 180px;
+    }
+
+    .detail-title {
+        font-size: var(--text-2xl);
+    }
+
+    .detail-stats {
+        justify-content: center;
+    }
+
+    .detail-actions {
+        justify-content: center;
+    }
+
+    .reciter-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: var(--text-2xl);
+    }
+}
