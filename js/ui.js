@@ -39,7 +39,7 @@ const QaariUI = (() => {
   function showToast(msg, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
-    const icons = { success: '✅', info: 'ℹ️', warning: '⚠️' };
+    const icons = { success: '✅', info: '', warning: '⚠️' };
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `<span class="toast-icon">${icons[type] || ''}</span>${msg}`;
@@ -747,7 +747,47 @@ const QaariUI = (() => {
     },
 
     toggleReciterDropdown() {
-      document.getElementById('reciterDropdown')?.classList.toggle('open');
+      const dd = document.getElementById('reciterDropdown');
+      if (!dd) return;
+      const isOpen = dd.classList.toggle('open');
+      if (isOpen) {
+        // Get the resolved background color
+        const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim() || '#1a1a2e';
+        // Apply bottom-sheet styles directly
+        dd.style.cssText = `
+          display: block;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          top: auto;
+          width: 100vw;
+          max-height: 60vh;
+          z-index: 10000;
+          border-radius: 16px 16px 0 0;
+          box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+          padding: 16px 16px 32px;
+          overflow-y: auto;
+          background: ${bgColor};
+          border-top: 1px solid rgba(255,255,255,0.1);
+        `;
+        // Add backdrop overlay
+        let backdrop = document.getElementById('reciterBackdrop');
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.id = 'reciterBackdrop';
+          backdrop.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;';
+          backdrop.onclick = () => {
+            dd.classList.remove('open');
+            dd.style.display = 'none';
+            backdrop.remove();
+          };
+          document.body.appendChild(backdrop);
+        }
+      } else {
+        dd.style.display = 'none';
+        document.getElementById('reciterBackdrop')?.remove();
+      }
     },
 
     selectReciter(reciterId, surahNum) {

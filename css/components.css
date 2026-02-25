@@ -706,23 +706,35 @@
 
 .reciter-dropdown {
     display: none;
-    position: absolute;
-    bottom: calc(100% + var(--space-2));
+    position: fixed;
+    bottom: 0;
     left: 0;
     right: 0;
-    max-height: 320px;
+    max-height: 60vh;
     overflow-y: auto;
     background: var(--bg-secondary);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
-    z-index: var(--z-modal);
-    padding: var(--space-2);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-modal) + 10);
+    padding: var(--space-4) var(--space-4) var(--space-8);
 }
 
 .reciter-dropdown.open {
     display: block;
-    animation: slideUp 0.2s ease-out;
+    animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideUp {
@@ -871,18 +883,9 @@
         font-size: var(--text-xs);
     }
 
-    .detail-actions .reciter-selector {
-        width: 100%;
-        margin-top: var(--space-1);
-    }
-
-    .detail-actions .reciter-select-btn {
-        width: 100%;
-        justify-content: center;
-        font-size: var(--text-xs);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    /* Reciter dropdown on mobile: constrained height */
+    .reciter-dropdown {
+        max-height: 50vh;
     }
 
     .detail-info {
