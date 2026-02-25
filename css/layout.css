@@ -219,6 +219,7 @@
 .content-wrapper {
     padding: var(--space-8);
     max-width: var(--content-max);
+    overflow-x: hidden;
 }
 
 /* ── Section ── */
@@ -363,6 +364,11 @@
     .search-container {
         width: 100%;
         flex: 1;
+        min-width: 0;
+    }
+
+    .top-header {
+        gap: var(--space-2);
     }
 }
 

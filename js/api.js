@@ -1,5 +1,5 @@
 /* ============================================
-   QAARI — Al Quran Cloud API Wrapper
+   QAARI — Al Quran Cloud API Wrapper (v2)
    ============================================ */
 
 const QaariAPI = (() => {
@@ -29,6 +29,47 @@ const QaariAPI = (() => {
         { id: 'ar.parhizgar', name: 'Shahriar Parhizgar', nameAr: 'شهریار پرهیزگار', color: '#f59e0b', image: '' },
         { id: 'ar.aymanswoaid', name: 'Ayman Sowaid', nameAr: 'أيمن سويد', color: '#64748b', image: '' },
     ];
+
+    // ── Translation Editions ──
+    const TRANSLATIONS = [
+        { id: 'en.sahih', language: 'English', name: 'Saheeh International', flag: '🇬🇧' },
+        { id: 'en.asad', language: 'English', name: 'Muhammad Asad', flag: '🇬🇧' },
+        { id: 'en.pickthall', language: 'English', name: 'Pickthall', flag: '🇬🇧' },
+        { id: 'ur.jalandhry', language: 'Urdu', name: 'Jalandhry', flag: '🇵🇰' },
+        { id: 'ur.ahmedali', language: 'Urdu', name: 'Ahmed Ali', flag: '🇵🇰' },
+        { id: 'fr.hamidullah', language: 'French', name: 'Hamidullah', flag: '🇫🇷' },
+        { id: 'tr.diyanet', language: 'Turkish', name: 'Diyanet İşleri', flag: '🇹🇷' },
+        { id: 'id.indonesian', language: 'Indonesian', name: 'Bahasa Indonesia', flag: '🇮🇩' },
+        { id: 'bn.bengali', language: 'Bengali', name: 'Muhiuddin Khan', flag: '🇧🇩' },
+        { id: 'de.aburida', language: 'German', name: 'Abu Rida', flag: '🇩🇪' },
+        { id: 'es.cortes', language: 'Spanish', name: 'Julio Cortes', flag: '🇪🇸' },
+        { id: 'ru.kuliev', language: 'Russian', name: 'Kuliev', flag: '🇷🇺' },
+        { id: 'ml.abdulhameed', language: 'Malayalam', name: 'Abdul Hameed', flag: '🇮🇳' },
+        { id: 'zh.majian', language: 'Chinese', name: 'Ma Jian', flag: '🇨🇳' },
+    ];
+
+    // ── Surah Juz Mapping + Context ──
+    const SURAH_META = {
+        1: { juz: [1], meaning: 'The Opening', context: 'The most recited surah in the world, repeated in every unit of prayer.' },
+        2: { juz: [1, 2, 3], meaning: 'The Cow', context: 'The longest surah, covering laws, stories of past nations, and guidance for the Muslim community.' },
+        3: { juz: [3, 4], meaning: 'The Family of Imran', context: 'Discusses the family of Imran, the birth of Maryam, Isa, and the Battle of Uhud.' },
+        4: { juz: [4, 5, 6], meaning: 'The Women', context: 'Covers rights of women, inheritance laws, and family relations.' },
+        5: { juz: [6, 7], meaning: 'The Table Spread', context: 'Discusses lawful food, fulfillment of contracts, and the story of Isa\'s disciples.' },
+        6: { juz: [7, 8], meaning: 'The Cattle', context: 'Focuses on oneness of Allah, rejection of polytheism, and stories of previous prophets.' },
+        7: { juz: [8, 9], meaning: 'The Heights', context: 'Tells the story of Adam, Musa, and the people of the heights between Paradise and Hell.' },
+        8: { juz: [9, 10], meaning: 'The Spoils of War', context: 'Revealed after the Battle of Badr, discusses distribution of war spoils and trust in Allah.' },
+        9: { juz: [10, 11], meaning: 'The Repentance', context: 'The only surah without Bismillah. Discusses treaties, hypocrites, and sincere repentance.' },
+        10: { juz: [11], meaning: 'Jonah', context: 'Named after Prophet Yunus, emphasizes Allah\'s mercy and the truth of the Quran.' },
+        18: { juz: [15, 16], meaning: 'The Cave', context: 'Contains four great stories: People of the Cave, the two gardens, Musa & Khidr, Dhul-Qarnayn.' },
+        36: { juz: [22, 23], meaning: 'Ya-Sin', context: 'Called the Heart of the Quran. Covers resurrection, signs of Allah in nature, and the Day of Judgment.' },
+        55: { juz: [27], meaning: 'The Most Merciful', context: 'Lists the blessings of Allah, repeatedly asking "Which of your Lord\'s favors will you deny?"' },
+        56: { juz: [27], meaning: 'The Inevitable Event', context: 'Describes the Day of Judgment and the three groups: the forerunners, the right, and the left.' },
+        67: { juz: [29], meaning: 'The Sovereignty', context: 'Reflects on Allah\'s dominion over creation and the consequences for disbelievers.' },
+        78: { juz: [30], meaning: 'The Great News', context: 'Opens Juz Amma. Describes the Day of Resurrection and Allah\'s signs in nature.' },
+        112: { juz: [30], meaning: 'Sincerity', context: 'Declares the oneness of Allah. Equal in reward to one-third of the Quran.' },
+        113: { juz: [30], meaning: 'The Daybreak', context: 'Seeking refuge in Allah from external evils and darkness.' },
+        114: { juz: [30], meaning: 'Mankind', context: 'The final surah, seeking refuge from the whisperer who whispers into the hearts of mankind.' },
+    };
 
     // ── Gradient pairings for surah art ──
     const SURAH_GRADIENTS = [
@@ -65,11 +106,21 @@ const QaariAPI = (() => {
     // ── Public Methods ──
     return {
         RECITERS,
+        TRANSLATIONS,
+        SURAH_META,
 
         getSurahGradient,
 
         getReciter(id) {
             return RECITERS.find(r => r.id === id) || RECITERS[0];
+        },
+
+        getTranslation(id) {
+            return TRANSLATIONS.find(t => t.id === id) || TRANSLATIONS[0];
+        },
+
+        getSurahMeta(number) {
+            return SURAH_META[number] || null;
         },
 
         async getSurahs() {

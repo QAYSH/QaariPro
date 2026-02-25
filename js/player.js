@@ -1,20 +1,30 @@
 /* ============================================
-   QAARI — Audio Player Engine
+   QAARI — Audio Player Engine (v2)
    ============================================ */
 
 const QaariPlayer = (() => {
     let audio = new Audio();
+    let preloadAudio = null; // for preloading next ayah
+    let audioContext = null;
+    let analyser = null;
+    let sourceNode = null;
+    let sleepTimerId = null;
+    let sleepTimerEnd = 0;
+
     let state = {
         playing: false,
-        surah: null,     // surah data object
-        reciter: null,   // reciter object
-        ayahs: [],       // array of ayah objects
-        currentIndex: 0, // current ayah index
+        surah: null,
+        reciter: null,
+        ayahs: [],
+        currentIndex: 0,
         duration: 0,
         currentTime: 0,
         volume: QaariStorage.getPrefs().volume || 0.8,
-        repeat: QaariStorage.getPrefs().repeat || 'none', // none | surah | ayah
+        repeat: QaariStorage.getPrefs().repeat || 'none',
+        speed: QaariStorage.getPrefs().speed || 1,
         loading: false,
+        continuousPlay: QaariStorage.getPrefs().continuousPlay !== false,
+        sleepTimer: 0, // minutes remaining, 0 = off
     };
 
     const listeners = new Set();
@@ -47,6 +57,11 @@ const QaariPlayer = (() => {
             setAyah(state.currentIndex + 1);
         } else if (state.repeat === 'surah') {
             setAyah(0);
+        } else if (state.continuousPlay && state.surah && state.surah.number < 114) {
+            // Continuous surah playback — auto-advance to next surah
+            const nextSurah = state.surah.number + 1;
+            const reciterId = state.reciter ? state.reciter.id : null;
+            publicAPI.loadSurah(nextSurah, reciterId);
         } else {
             state.playing = false;
             emit();
@@ -70,12 +85,23 @@ const QaariPlayer = (() => {
         emit();
     });
 
+    // ── Preload next ayah ──
+    function preloadNext(index) {
+        const nextIdx = index + 1;
+        if (nextIdx < state.ayahs.length && state.ayahs[nextIdx]) {
+            preloadAudio = new Audio();
+            preloadAudio.preload = 'auto';
+            preloadAudio.src = state.ayahs[nextIdx].audio;
+        }
+    }
+
     // ── Core ──
     function setAyah(index) {
         if (!state.ayahs[index]) return;
         state.currentIndex = index;
         state.loading = true;
         audio.src = state.ayahs[index].audio;
+        audio.playbackRate = state.speed;
         audio.play()
             .then(() => {
                 state.playing = true;
@@ -90,6 +116,8 @@ const QaariPlayer = (() => {
                     );
                 }
                 emit();
+                // Preload next ayah
+                preloadNext(index);
             })
             .catch(err => {
                 console.error('Play failed:', err);
@@ -99,10 +127,35 @@ const QaariPlayer = (() => {
         emit();
     }
 
-    // ── Init volume ──
-    audio.volume = state.volume;
+    // ── Web Audio API for Visualizer (deferred) ──
+    // Only connect to audio element when visualizer is explicitly opened,
+    // to avoid CORS issues that silence audio on file:// or cross-origin.
+    function initAudioContext() {
+        if (audioContext) return;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 128;
+            analyser.smoothingTimeConstant = 0.8;
+            // Only connect source when we have an audio context
+            // This requires crossOrigin on audio for CDN sources
+            audio.crossOrigin = 'anonymous';
+            sourceNode = audioContext.createMediaElementSource(audio);
+            sourceNode.connect(analyser);
+            analyser.connect(audioContext.destination);
+        } catch (e) {
+            console.warn('Web Audio API not available:', e);
+            audioContext = null;
+            analyser = null;
+        }
+    }
 
-    return {
+    // ── Init ──
+    audio.volume = state.volume;
+    audio.playbackRate = state.speed;
+
+    // ── Public API ──
+    const publicAPI = {
         onStateChange(fn) {
             listeners.add(fn);
             return () => listeners.delete(fn);
@@ -110,6 +163,23 @@ const QaariPlayer = (() => {
 
         getState() {
             return { ...state };
+        },
+
+        getAnalyser() {
+            // Only init audio context when visualizer is explicitly requested
+            if (!audioContext) {
+                initAudioContext();
+                // If we just connected crossOrigin, we may need to reload current src
+                if (audio.src && sourceNode) {
+                    const currentSrc = audio.src;
+                    const currentTime = audio.currentTime;
+                    const wasPlaying = !audio.paused;
+                    audio.src = currentSrc;
+                    audio.currentTime = currentTime;
+                    if (wasPlaying) audio.play().catch(() => { });
+                }
+            }
+            return analyser;
         },
 
         async loadSurah(surahNumber, reciterId = null) {
@@ -127,6 +197,7 @@ const QaariPlayer = (() => {
                 state.currentIndex = 0;
 
                 QaariStorage.setPref('reciter', rid);
+                // Audio context is only initialized when visualizer is opened
                 setAyah(0);
             } catch (err) {
                 console.error('Failed to load surah:', err);
@@ -189,6 +260,62 @@ const QaariPlayer = (() => {
             emit();
         },
 
+        // ── Speed Control ──
+        setSpeed(rate) {
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+            state.speed = speeds.includes(rate) ? rate : 1;
+            audio.playbackRate = state.speed;
+            QaariStorage.setPref('speed', state.speed);
+            emit();
+        },
+
+        cycleSpeed() {
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+            const idx = speeds.indexOf(state.speed);
+            const next = speeds[(idx + 1) % speeds.length];
+            this.setSpeed(next);
+        },
+
+        // ── Sleep Timer ──
+        setSleepTimer(minutes) {
+            if (sleepTimerId) clearTimeout(sleepTimerId);
+            if (minutes <= 0) {
+                state.sleepTimer = 0;
+                sleepTimerEnd = 0;
+                emit();
+                return;
+            }
+            state.sleepTimer = minutes;
+            sleepTimerEnd = Date.now() + minutes * 60 * 1000;
+            sleepTimerId = setTimeout(() => {
+                this.pause();
+                state.sleepTimer = 0;
+                sleepTimerEnd = 0;
+                emit();
+            }, minutes * 60 * 1000);
+            emit();
+        },
+
+        clearSleepTimer() {
+            if (sleepTimerId) clearTimeout(sleepTimerId);
+            sleepTimerId = null;
+            state.sleepTimer = 0;
+            sleepTimerEnd = 0;
+            emit();
+        },
+
+        getSleepTimerRemaining() {
+            if (!sleepTimerEnd) return 0;
+            return Math.max(0, Math.ceil((sleepTimerEnd - Date.now()) / 1000 / 60));
+        },
+
+        // ── Continuous Play ──
+        toggleContinuousPlay() {
+            state.continuousPlay = !state.continuousPlay;
+            QaariStorage.setPref('continuousPlay', state.continuousPlay);
+            emit();
+        },
+
         playAyahAt(index) {
             setAyah(index);
         },
@@ -200,5 +327,17 @@ const QaariPlayer = (() => {
                 QaariStorage.setPref('reciter', reciterId);
             }
         },
+
+        // ── Queue Integration ──
+        async playNextInQueue() {
+            const queue = QaariStorage.getQueue();
+            if (queue.length === 0) return false;
+            const next = queue[0];
+            QaariStorage.removeFromQueue(0);
+            await this.loadSurah(next.surahNum, next.reciterId);
+            return true;
+        },
     };
+
+    return publicAPI;
 })();

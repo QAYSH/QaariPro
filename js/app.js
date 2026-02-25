@@ -1,9 +1,50 @@
 /* ============================================
-   QAARI — App Initialization
+   QAARI — App Initialization (v2)
    ============================================ */
 
 (function QaariApp() {
     'use strict';
+
+    // ── Theme Init ──
+    const initTheme = () => {
+        const pref = QaariStorage.getPrefs().theme || 'dark';
+        if (pref === 'system') {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        } else {
+            document.documentElement.setAttribute('data-theme', pref);
+        }
+        updateThemeIcon();
+    };
+
+    const updateThemeIcon = () => {
+        const btn = document.getElementById('themeToggle');
+        if (!btn) return;
+        const theme = document.documentElement.getAttribute('data-theme');
+        btn.textContent = theme === 'light' ? '☀️' : '🌙';
+        // Update theme-color meta
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', theme === 'light' ? '#f8f9fa' : '#0a0a0f');
+    };
+
+    initTheme();
+
+    // ── Theme Toggle ──
+    document.getElementById('themeToggle')?.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        QaariStorage.setPref('theme', next);
+        updateThemeIcon();
+    });
+
+    // System theme change listener
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (QaariStorage.getPrefs().theme === 'system') {
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            updateThemeIcon();
+        }
+    });
 
     // ── Register Routes ──
     QaariRouter.register('/', () => QaariUI.renderHome());
@@ -12,13 +53,13 @@
     QaariRouter.register('/surah/:id', (params) => QaariUI.renderSurahDetail(params));
     QaariRouter.register('/reciter/:id', (params) => QaariUI.renderReciterDetail(params));
     QaariRouter.register('/favorites', () => QaariUI.renderFavorites());
+    QaariRouter.register('/bookmarks', () => QaariUI.renderBookmarks());
     QaariRouter.register('/search', () => QaariUI.renderSearch(''));
 
     // ── Sidebar Navigation ──
     document.querySelectorAll('.nav-item[data-route]').forEach(item => {
         item.addEventListener('click', () => {
             QaariRouter.navigate(item.dataset.route);
-            // Close mobile sidebar
             closeMobileSidebar();
         });
     });
@@ -73,6 +114,22 @@
     document.getElementById('playerPrevBtn')?.addEventListener('click', () => QaariPlayer.prev());
     document.getElementById('playerNextBtn')?.addEventListener('click', () => QaariPlayer.next());
     document.getElementById('playerRepeatBtn')?.addEventListener('click', () => QaariPlayer.cycleRepeat());
+    document.getElementById('playerSpeedBtn')?.addEventListener('click', () => QaariPlayer.cycleSpeed());
+
+    // Queue button
+    document.getElementById('queueBtn')?.addEventListener('click', () => QaariUI.showQueueDrawer());
+
+    // Share button
+    document.getElementById('shareBtn')?.addEventListener('click', () => {
+        const state = QaariPlayer.getState();
+        if (state.surah) QaariUI.shareSurah(state.surah.number, state.reciter?.id);
+    });
+
+    // Sleep timer button
+    document.getElementById('sleepTimerBtn')?.addEventListener('click', (e) => {
+        if (e.target.closest('.sleep-timer-dropdown')) return;
+        document.getElementById('sleepTimerDropdown')?.classList.toggle('open');
+    });
 
     // Progress bar click
     document.querySelector('.player-progress-container')?.addEventListener('click', (e) => {
@@ -109,8 +166,7 @@
 
     // ── Keyboard Shortcuts ──
     document.addEventListener('keydown', (e) => {
-        // Don't trigger if typing in search
-        if (e.target.tagName === 'INPUT') return;
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
 
         switch (e.code) {
             case 'Space':
@@ -131,6 +187,34 @@
                 e.preventDefault();
                 QaariPlayer.setVolume(QaariPlayer.getState().volume - 0.1);
                 break;
+            case 'Escape':
+                QaariUI.closeNowPlaying();
+                QaariUI.closeQueueDrawer();
+                document.querySelector('.modal-overlay')?.remove();
+                document.getElementById('sleepTimerDropdown')?.classList.remove('open');
+                document.getElementById('reciterDropdown')?.classList.remove('open');
+                break;
+        }
+
+        // Letter shortcuts
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+            switch (e.key) {
+                case '?':
+                    QaariUI.showShortcutsModal();
+                    break;
+                case 's':
+                case 'S':
+                    QaariPlayer.cycleSpeed();
+                    break;
+                case 'r':
+                case 'R':
+                    QaariPlayer.cycleRepeat();
+                    break;
+                case 'q':
+                case 'Q':
+                    QaariUI.showQueueDrawer();
+                    break;
+            }
         }
     });
 
@@ -139,14 +223,18 @@
         if (!e.target.closest('.reciter-selector')) {
             document.getElementById('reciterDropdown')?.classList.remove('open');
         }
+        if (!e.target.closest('.sleep-timer-btn')) {
+            document.getElementById('sleepTimerDropdown')?.classList.remove('open');
+        }
     });
 
     // ── Init Volume ──
     const prefs = QaariStorage.getPrefs();
     QaariPlayer.setVolume(prefs.volume);
+    if (prefs.speed && prefs.speed !== 1) QaariPlayer.setSpeed(prefs.speed);
 
     // ── Start Router ──
     QaariRouter.start();
 
-    console.log('🕌 Qaari — Audio Quran Streaming Platform loaded');
+    console.log('🕌 QaariPro — Audio Quran Streaming Platform loaded (v2)');
 })();

@@ -551,6 +551,8 @@
     display: flex;
     align-items: center;
     gap: var(--space-4);
+    flex-wrap: wrap;
+    max-width: 100%;
 }
 
 /* ── Continue Listening Card ── */
@@ -652,6 +654,164 @@
     color: var(--text-secondary);
 }
 
+/* ── Reciter Selector ── */
+.reciter-selector {
+    position: relative;
+    width: 100%;
+    margin-top: var(--space-3);
+}
+
+.reciter-select-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.reciter-select-btn:hover {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+}
+
+.reciter-select-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--accent);
+}
+
+.reciter-select-btn .reciter-name-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.reciter-select-btn .chevron {
+    margin-left: auto;
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    transition: transform var(--transition-fast);
+}
+
+.reciter-dropdown {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + var(--space-2));
+    left: 0;
+    right: 0;
+    max-height: 320px;
+    overflow-y: auto;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+    z-index: var(--z-modal);
+    padding: var(--space-2);
+}
+
+.reciter-dropdown.open {
+    display: block;
+    animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reciter-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.reciter-dropdown-item:hover {
+    background: var(--bg-hover);
+}
+
+.reciter-dropdown-item.selected {
+    background: var(--accent-alpha);
+    border-left: 3px solid var(--accent);
+}
+
+.reciter-dropdown-item .reciter-item-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.reciter-dropdown-item .reciter-item-name {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.reciter-dropdown-item .reciter-item-name-ar {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-family: var(--font-arabic);
+    direction: rtl;
+}
+
+/* ── Translation Select ─── */
+.translation-select {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 36px;
+}
+
+.translation-select:hover {
+    border-color: var(--accent);
+}
+
+.translation-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-alpha);
+}
+
 /* ── Responsive Detail Header ── */
 @media (max-width: 768px) {
     .hero {
@@ -671,29 +831,137 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: var(--space-6);
+        padding: var(--space-6) var(--space-4);
+        gap: var(--space-4);
     }
 
     .detail-art {
-        width: 180px;
-        height: 180px;
+        width: 160px;
+        height: 160px;
     }
 
     .detail-title {
         font-size: var(--text-2xl);
     }
 
+    .detail-subtitle {
+        font-size: var(--text-md);
+    }
+
     .detail-stats {
         justify-content: center;
+        flex-wrap: wrap;
+        gap: var(--space-2);
     }
 
     .detail-actions {
         justify-content: center;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        width: 100%;
+    }
+
+    .detail-actions .btn {
+        font-size: var(--text-xs);
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .detail-actions .btn-ghost {
+        padding: var(--space-2);
+        font-size: var(--text-xs);
+    }
+
+    .detail-actions .reciter-selector {
+        width: 100%;
+        margin-top: var(--space-1);
+    }
+
+    .detail-actions .reciter-select-btn {
+        width: 100%;
+        justify-content: center;
+        font-size: var(--text-xs);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .detail-info {
+        width: 100%;
     }
 
     .reciter-avatar {
         width: 80px;
         height: 80px;
         font-size: var(--text-2xl);
+    }
+
+    /* Grid 2 columns on mobile */
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Continue card full width */
+    .continue-card {
+        min-width: 0;
+    }
+
+    /* Ayah items — always show play + bookmark on touch */
+    .ayah-play-btn {
+        opacity: 1;
+    }
+
+    .ayah-bookmark-btn {
+        opacity: 1;
+    }
+
+    /* Surah card compact */
+    .surah-card .surah-play-btn {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Reciter dropdown — full width on mobile */
+    .reciter-dropdown {
+        width: 100%;
+        left: 0;
+        right: 0;
+        bottom: auto;
+        top: calc(100% + var(--space-2));
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-art {
+        width: 140px;
+        height: 140px;
+    }
+
+    .detail-title {
+        font-size: var(--text-xl);
+    }
+
+    .detail-actions .btn-primary {
+        width: 100%;
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-2);
+    }
+
+    .surah-card {
+        padding: var(--space-3);
+    }
+
+    .surah-name-arabic {
+        font-size: var(--text-md);
+    }
+
+    .surah-name-english {
+        font-size: var(--text-sm);
+    }
+
+    .reciter-card {
+        padding: var(--space-4) var(--space-3);
     }
 }

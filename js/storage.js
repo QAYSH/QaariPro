@@ -1,5 +1,5 @@
 /* ============================================
-   QAARI — localStorage Helpers
+   QAARI — localStorage Helpers (v2)
    ============================================ */
 
 const QaariStorage = (() => {
@@ -7,6 +7,8 @@ const QaariStorage = (() => {
         FAVORITES: 'qaari_favorites',
         HISTORY: 'qaari_history',
         PREFS: 'qaari_prefs',
+        BOOKMARKS: 'qaari_bookmarks',
+        QUEUE: 'qaari_queue',
     };
 
     function load(key, fallback) {
@@ -69,12 +71,73 @@ const QaariStorage = (() => {
             save(KEYS.HISTORY, history);
         },
 
+        clearHistory() {
+            save(KEYS.HISTORY, []);
+        },
+
+        // ── Bookmarks ──
+        getBookmarks() {
+            return load(KEYS.BOOKMARKS, []);
+        },
+
+        addBookmark(surahNum, ayahIndex, surahName, note = '') {
+            const bookmarks = this.getBookmarks();
+            // Don't add duplicate
+            if (bookmarks.some(b => b.surahNum === surahNum && b.ayahIndex === ayahIndex)) return false;
+            bookmarks.unshift({
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                surahNum,
+                ayahIndex,
+                surahName,
+                note,
+                timestamp: Date.now(),
+            });
+            save(KEYS.BOOKMARKS, bookmarks);
+            return true;
+        },
+
+        removeBookmark(id) {
+            let bookmarks = this.getBookmarks();
+            bookmarks = bookmarks.filter(b => b.id !== id);
+            save(KEYS.BOOKMARKS, bookmarks);
+        },
+
+        isBookmarked(surahNum, ayahIndex) {
+            return this.getBookmarks().some(b => b.surahNum === surahNum && b.ayahIndex === ayahIndex);
+        },
+
+        // ── Queue ──
+        getQueue() {
+            return load(KEYS.QUEUE, []);
+        },
+
+        addToQueue(surahNum, reciterId, surahName, reciterName) {
+            const queue = this.getQueue();
+            queue.push({ surahNum, reciterId, surahName, reciterName, addedAt: Date.now() });
+            save(KEYS.QUEUE, queue);
+            return queue.length;
+        },
+
+        removeFromQueue(index) {
+            const queue = this.getQueue();
+            queue.splice(index, 1);
+            save(KEYS.QUEUE, queue);
+        },
+
+        clearQueue() {
+            save(KEYS.QUEUE, []);
+        },
+
         // ── Preferences ──
         getPrefs() {
             return load(KEYS.PREFS, {
                 volume: 0.8,
                 reciter: 'ar.alafasy',
-                repeat: 'none', // none | surah | ayah
+                repeat: 'none',
+                speed: 1,
+                theme: 'dark',
+                translation: 'en.sahih',
+                continuousPlay: true,
             });
         },
 
