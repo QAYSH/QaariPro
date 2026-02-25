@@ -282,12 +282,14 @@ const QaariUI = (() => {
         const translationText = translation && translation.ayahs && translation.ayahs[i] ? translation.ayahs[i].text : '';
         const isBookmarked = QaariStorage.isBookmarked(surahNum, i);
         return `<div class="ayah-item ${isPlaying ? 'playing' : ''}" data-ayah-index="${i}" onclick="QaariUI.playAyah(${surahNum}, '${currentReciter}', ${i})">
-              <div class="ayah-number">${isPlaying ? '<div class="equalizer"><div class="equalizer-bar"></div><div class="equalizer-bar"></div><div class="equalizer-bar"></div><div class="equalizer-bar"></div></div>' : ayah.numberInSurah}</div>
               <div class="ayah-text">${ayah.text}</div>
-              <button class="ayah-bookmark-btn ${isBookmarked ? 'bookmarked' : ''}" onclick="event.stopPropagation();QaariUI.toggleBookmark(${surahNum},${i},'${surah.englishName}')" aria-label="Bookmark">${isBookmarked ? ICONS.bookmarkFilled : ICONS.bookmark}</button>
-              <button class="ayah-play-btn" aria-label="Play Ayah ${ayah.numberInSurah}">${isPlaying ? ICONS.pause : ICONS.play}</button>
-            </div>
-            ${translationText ? `<div class="ayah-translation">${translationText}</div>` : ''}`;
+              ${translationText ? `<div class="ayah-translation">${translationText}</div>` : ''}
+              <div class="ayah-actions">
+                <div class="ayah-number">${isPlaying ? '<div class="equalizer"><div class="equalizer-bar"></div><div class="equalizer-bar"></div><div class="equalizer-bar"></div><div class="equalizer-bar"></div></div>' : ayah.numberInSurah}</div>
+                <button class="ayah-play-btn" aria-label="Play Ayah ${ayah.numberInSurah}">${isPlaying ? ICONS.pause : ICONS.play}</button>
+                <button class="ayah-bookmark-btn ${isBookmarked ? 'bookmarked' : ''}" onclick="event.stopPropagation();QaariUI.toggleBookmark(${surahNum},${i},'${surah.englishName}')" aria-label="Bookmark">${isBookmarked ? ICONS.bookmarkFilled : ICONS.bookmark}</button>
+              </div>
+            </div>`;
       }).join('')}
         </div>
       </div>`;

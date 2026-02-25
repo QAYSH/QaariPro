@@ -166,20 +166,10 @@ const QaariPlayer = (() => {
         },
 
         getAnalyser() {
-            // Only init audio context when visualizer is explicitly requested
-            if (!audioContext) {
-                initAudioContext();
-                // If we just connected crossOrigin, we may need to reload current src
-                if (audio.src && sourceNode) {
-                    const currentSrc = audio.src;
-                    const currentTime = audio.currentTime;
-                    const wasPlaying = !audio.paused;
-                    audio.src = currentSrc;
-                    audio.currentTime = currentTime;
-                    if (wasPlaying) audio.play().catch(() => { });
-                }
-            }
-            return analyser;
+            // Return analyser only if already initialized
+            // Do NOT init audio context here — it sets crossOrigin
+            // on a playing audio element and CORS silences it
+            return analyser || null;
         },
 
         async loadSurah(surahNumber, reciterId = null) {

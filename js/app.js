@@ -156,13 +156,22 @@
     });
 
     // Player fav button
-    document.querySelector('.player-fav-btn')?.addEventListener('click', () => {
+    document.querySelector('.player-fav-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Don't trigger now-playing overlay
         const state = QaariPlayer.getState();
         if (state.surah) {
             QaariStorage.toggleFavorite('surahs', state.surah.number);
             QaariUI.updatePlayerBar(state);
         }
     });
+
+    // Clicking the player bar opens the Now Playing fullscreen view
+    document.querySelector('.player-now-playing')?.addEventListener('click', () => {
+        QaariUI.showNowPlaying();
+    });
+    // Also make the player bar cover area clickable
+    document.querySelector('.player-cover')?.style?.setProperty('cursor', 'pointer');
+    document.querySelector('.player-track-info')?.style?.setProperty('cursor', 'pointer');
 
     // ── Keyboard Shortcuts ──
     document.addEventListener('keydown', (e) => {
