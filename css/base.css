@@ -691,6 +691,52 @@ h6 {
     text-align: center;
 }
 
+.now-playing-extras {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+}
+
+.now-playing-volume {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 80%;
+    max-width: 300px;
+    margin: 0 auto var(--space-4);
+}
+
+.now-playing-volume-slider {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--border-subtle);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.now-playing-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+}
+
+.now-playing-volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+}
+
 /* ── Mobile Bottom Nav ── */
 .mobile-bottom-nav {
     display: none;

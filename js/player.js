@@ -162,7 +162,11 @@ const QaariPlayer = (() => {
         },
 
         getState() {
-            return { ...state };
+            return { ...state, volume: audio.volume };
+        },
+
+        setVolume(v) {
+            audio.volume = Math.max(0, Math.min(1, parseFloat(v)));
         },
 
         getAnalyser() {

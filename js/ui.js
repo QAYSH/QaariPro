@@ -39,7 +39,7 @@ const QaariUI = (() => {
   function showToast(msg, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
-    const icons = { success: '✅', info: '', warning: '⚠️' };
+    const icons = { success: '', info: '', warning: '⚠️' };
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `<span class="toast-icon">${icons[type] || ''}</span>${msg}`;
@@ -490,8 +490,25 @@ const QaariUI = (() => {
         <button class="now-playing-ctrl-btn" onclick="QaariPlayer.next()">${ICONS.next}</button>
         <button class="now-playing-ctrl-btn ${isFav ? 'active' : ''}" onclick="QaariUI._npToggleFav()">${isFav ? ICONS.heartFilled : ICONS.heart}</button>
       </div>
-      <div style="display:flex;gap:var(--space-4);align-items:center;margin-bottom:var(--space-4)">
+      <div class="now-playing-extras">
         <button class="speed-badge ${state.speed !== 1 ? 'active' : ''}" onclick="QaariPlayer.cycleSpeed()">${state.speed}x</button>
+        <button class="now-playing-ctrl-btn" id="npShareBtn" onclick="QaariUI._npShare()" title="Share">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+        </button>
+      </div>
+      <div class="now-playing-volume">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:var(--text-tertiary);flex-shrink:0">
+          <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+        <input type="range" class="now-playing-volume-slider" id="npVolumeSlider" min="0" max="1" step="0.01" value="${QaariPlayer.getState().volume || 0.8}" oninput="QaariPlayer.setVolume(this.value)" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:var(--text-tertiary);flex-shrink:0">
+          <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
       </div>`;
 
     document.body.appendChild(overlay);
@@ -846,6 +863,18 @@ const QaariUI = (() => {
         QaariStorage.toggleFavorite('surahs', state.surah.number);
         closeNowPlaying();
         setTimeout(() => showNowPlaying(), 50);
+      }
+    },
+
+    _npShare() {
+      const state = QaariPlayer.getState();
+      if (!state.surah) return;
+      const url = `${window.location.origin}${window.location.pathname}#/surah/${state.surah.number}`;
+      const text = `Listen to ${state.surah.englishName} by ${state.reciter ? state.reciter.name : 'QaariPro'}`;
+      if (navigator.share) {
+        navigator.share({ title: 'QaariPro', text, url });
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => showToast('Link copied!', 'info'));
       }
     },
   };
